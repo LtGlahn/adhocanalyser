@@ -1,5 +1,6 @@
 import STARTHER
 import nvdbapiv3
+import nvdbgeotricks 
 
 if __name__ == '__main__': 
     print( "Sjekker at vi kan bruke NVDB api") 

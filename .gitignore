@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Datafiler vi ikke gidder tracke
+data_wip_aug2022/

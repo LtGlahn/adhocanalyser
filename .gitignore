@@ -130,3 +130,6 @@ dmypy.json
 
 # Ignorerer lokale datafiler
 data_wip_aug2022/
+
+# Ignorerer lokale hemmeligheter
+credentials.json

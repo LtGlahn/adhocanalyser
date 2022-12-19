@@ -15,7 +15,7 @@ Ymse "work in progress" - oppgaver fra november 20222 og fram til det blir passe
 
 ## Trafikkarbeid på motorveg og per funksjonsklasse
 
-`script_oppsummerModulvogntog.py` kombinerer ÅDT-verdier (fra objekttype 540 trafikkmengde) med motorveg og multipliserer ÅDT * lengden av de kombinerte vegsegmentene *365 for å få trafikkarbeidet (kjøretøy kilometer per år), som vi oppgir i millioner kjøretøy kilometer per år - på Europa-, Riks- og Fylkesveger. 
+`script_oppsummerModulvogntog.py` kombinerer ÅDT-verdier (fra objekttype 540 trafikkmengde) med motorveg og multipliserer ÅDT * lengden av de kombinerte vegsegmentene *365 for å få trafikkarbeidet (kjøretøy kilometer per år), som vi oppgir i millioner kjøretøy kilometer per år - på Europa-, Riks- og Fylkesveger. Kjøretida for scriptet er om lag 10 minutt.
 
 $$
 Trafikkarbeid\; i\; millioner\; kjt\; kilometer\; per\; år = \frac{365}{10^6} \sum  ÅDT (kjt/døgn) * Lengde (km)

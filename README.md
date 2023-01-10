@@ -53,9 +53,9 @@ Pga tidsnød er IKKE tallene konsistente med KOSTRA-rapportering ved at de også
 Avvik fra de offisielle KOSTRA-tallene: 
 
 | Avvik             | vegnett | 900 BK Tømmertransport | 889 BK Modulvogntog | 
-|-------------------|---------|------------------------|---------------------|
-| Vegtype Bilferjer | +503 km  |               +365km |                   0 |
-| Sideanlegg        | +310 km  |               +146km |               +45km |
+|-------------------|---------:|---------------------:|--------------------:|
+| Vegtype Bilferjer | +503km  |               +365km |                   0 |
+| Sideanlegg        | +310km  |               +146km |               +45km |
 
 Cirka 80 km av KOSTRA-vegnettet (per 20.12.2022) mangler data for objekttypen _900 Bruksklasse Tømmertransport_ - som jo skal være heldekkende på det kjørbare ERFK - vegnettet. P.t. (januar 2023) har vi betydelige aktiviter for å fylle disse "hullene", dels maskinelt og dels manuelt. 
 

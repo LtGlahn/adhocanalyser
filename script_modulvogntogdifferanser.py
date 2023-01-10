@@ -32,7 +32,6 @@ if __name__ == '__main__':
     # tillattTommer = bk.groupby( ['vegkategori', 
     #         'Tillatt for modulvogntog 1 og 2 med sporingskrav', 'Bruksklasse', 
     #         'Maks vogntoglengde', 'Maks totalvekt']).agg( {'lengde (km)' : 'sum' } ).reset_index()
-    #         'Maks vogntoglengde', 'Maks totalvekt']).agg( {'lengde (km)' : 'sum' } ).reset_index()
 
     bk['geometry'] = bk['geometri'].apply( wkt.loads ) 
     bk = gpd.GeoDataFrame( bk, geometry='geometry', crs=5973) 
@@ -57,7 +56,7 @@ if __name__ == '__main__':
     t1 = datetime.now()
     print( f"Nedlastingstid {t1-t0} ")
     joined =     nvdbgeotricks.finnoverlapp( bk, bkmodul, prefixB='bk889_', klippgeometri=False, klippvegsystemreferanse=False   )
-    joined_cut = nvdbgeotricks.finnoverlapp( bk, bkmodul, prefixB='bk889_', klippgeometri=True, klippvegsystemreferanse=True   )
+    joined_cut = nvdbgeotricks.finnoverlapp( bk, bkmodul, prefixB='bk889_', klippgeometri=True,  klippvegsystemreferanse=True   )
     t2 = datetime.now()
     print( f"Tidsbruk finnoverlapp X 2: {t2-t1} ")
 
@@ -71,10 +70,10 @@ if __name__ == '__main__':
     # 
     
 
-    gpkgfil = 'moduleksperiment.gpkg'
-    bk_ikkemodulvogntog.to_file(    gpkgfil, layer='Ikke 25.25m modulvogntog', driver='GPKG') 
-    joined.to_file(                 gpkgfil, layer='Både 24 og 25.25m modulvogntog - Ukorrigert', driver='GPKG') 
-    joined_cut.to_file(             gpkgfil, layer='Både 24 og 25.25m modulvogntog - korrigert', driver='GPKG') 
+    # gpkgfil = 'moduleksperiment.gpkg'
+    # bk_ikkemodulvogntog.to_file(    gpkgfil, layer='Ikke 25.25m modulvogntog', driver='GPKG') 
+    # joined.to_file(                 gpkgfil, layer='Både 24 og 25.25m modulvogntog - Ukorrigert', driver='GPKG') 
+    # joined_cut.to_file(             gpkgfil, layer='Både 24 og 25.25m modulvogntog - korrigert', driver='GPKG') 
 
 
-    nvdbgeotricks.skrivexcel( 'Modulvogntog ikke 25.25m.xlsx', bk_ikkemodulvogntog )
+    # nvdbgeotricks.skrivexcel( 'Modulvogntog ikke 25.25m.xlsx', bk_ikkemodulvogntog )

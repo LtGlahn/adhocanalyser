@@ -27,7 +27,7 @@ import nvdbapiv3
 import nvdbgeotricks
 import pandas as pd
 import geopandas as gpd
-
+ 
 
 if __name__ == '__main__': 
     mittfilter = { 'vegsystemreferanse' : 'Ev,Rv,Fv' }

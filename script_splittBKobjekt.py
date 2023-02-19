@@ -45,12 +45,26 @@ def df2veglenkepos( mindf, col_vlenk='veglenkesekvensid', col_start='startposisj
 # Sjekk veglenkesekvens 121755 
 
 if __name__ == '__main__': 
-    endreDisse = [ 1016497070,     # Normaltransport 
-                1016495424,  # Tømmertransport 
-                1016496222,  # Spesialtransport 
-                779619604,   # Normal uoff
-                1015223762,  # Tømmer uoff
-                779578871  ]  # Spesial uoff 
+    # endreDisse = [ 1015404245,     # Normaltransport 
+    #             1015380090,  # Tømmertransport 
+    #             1015397834,  # Spesialtransport 
+    #             778662083,   # Normal uoff
+    #             778614290,  # Tømmer uoff
+    #             778628528  ]  # Spesial uoff 
+
+    endreDisse = [  1016493070, # Normaltransport
+                    1016491757, # Tømmertransport
+                    1016492419, # Spesialtransport
+                    1015261335,  # Normal uoff
+                    1015263140, # Tømmer uoff 
+                    1015263088,  # Spesial uoff
+                    1017301956, # Normaltransport
+                    1016491587, # Tømmertransport
+                    1017301976, # Spesialtransport
+                    1015261308,  # Normal uoff
+                    1015263130, # Tømmer uoff 
+                    1015263089  # Spesial uoff
+             ]
 
 
     skrivemal = None 
@@ -59,6 +73,7 @@ if __name__ == '__main__':
     # if not forb.+
     forb.login( miljo='prodles')
     count = -100
+    debug = []
     for minId in endreDisse: 
         obj = forb.finnid( minId, kunfagdata=True )
         data = pd.DataFrame( nvdbapiv3.nvdbfagdata2records( obj ))
@@ -67,7 +82,7 @@ if __name__ == '__main__':
         data['strekningsnummer'] = data['vref'].apply( lambda x : int( x.split()[1].split('D')[0][1:] ) )
         data['delstrekningsnummer'] = data['vref'].apply( lambda x : int( x.split()[1].split('D')[1] ))
         data['vegnr-strekning'] =  data['vref'].apply( lambda x : x.split()[0] +  ' ' + str( x.split()[1].split('D')[0].lower()  ) )
-
+        debug.append( data )
         # lokasjon = skrivnvdb.lokasjon2skriv( [x for x in obj['egenskaper'] if x['navn'] == 'Liste av lokasjonsattributt' ][0] )
 
         denneObjType = skrivnvdb.fagdata2skrivemal( obj , operasjon='registrer'  )

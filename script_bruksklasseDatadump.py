@@ -56,7 +56,7 @@ if __name__ == '__main__':
     bk['minindex'] = bk.index
 
     # Inner join for BK modulvogntog og BK tømmertransport
-    joined_cut = nvdbgeotricks.finnoverlapp( bk, bkmodul, prefixB='bk889_', klippgeometri=True,  klippvegsystemreferanse=True   )
+    joined_cut = overlapp.finnoverlapp( bk, bkmodul, prefixB='bk889_', klippgeometri=True,  klippvegsystemreferanse=True   )
 
     joined_cut['Grådig overlapp-lengde (km)'] = joined_cut['lengde (km)']
     joined_cut['Overlapp BK tømmer - BK ModulVT (km)'] = joined_cut['segmentlengde'] / 1000 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         sheet_nameListe=[ 'BK Normaltransport', 'BK Tømmetransport', 'BK Modulvogntog', 'Overlapp BK Tømmer og ModulVT', 'BK Tømmer IKKE overlapp', 'Høydebegrensning' ]  )
 
     t6 = datetime.now()
-    print( "Tidsbruk lagring til word", t6-t5)
+    print( "Tidsbruk lagring til excel", t6-t5)
 
     gpkgfil = 'raadata_bruksklasser_ERFK.gpkg'
     bkNormal.to_file(            gpkgfil, layer='BK Normaltransport', driver='GPKG')

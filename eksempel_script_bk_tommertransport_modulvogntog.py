@@ -12,7 +12,7 @@ import nvdbgeotricks
 if __name__ == '__main__': 
 
     mittfilter = { 'vegsystemreferanse' : 'Ev,Rv,Fv,Kv' } # 
-    mittfilter['egenskap'] = '12057=20911'
+    mittfilter['egenskap'] = '12057=20911' # Egenskapfilter Tillatt for modulvogntog med sporingskrav type 1 og 2 = Ja
     mittfilter['tidspunkt'] = '2022-12-15' 
     sok = nvdbapiv3.nvdbFagdata( 900, filter=mittfilter  ) # Bruksklasse modulvogntog 
     mydf = pd.DataFrame( sok.to_records())

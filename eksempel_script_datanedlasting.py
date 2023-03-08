@@ -9,7 +9,7 @@ import nvdbgeotricks
 if __name__ == '__main__': 
 
     mittfilter = { 'kommune'  : 5001, 'vegsystemreferanse' : 'Ev,Rv,Fv,Kv' } # Trondheim kommune 
-    sok = nvdbapiv3.nvdbFagdata( 899, filter=mittfilter  ) # Bruksklasse modulvogntog 
+    sok = nvdbapiv3.nvdbFagdata( 889, filter=mittfilter  ) # Bruksklasse modulvogntog 
     mydf = pd.DataFrame( sok.to_records())
 
     # Konverterer fra dataframe => Geodataframe  

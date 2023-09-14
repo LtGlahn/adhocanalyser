@@ -19,9 +19,10 @@ def sok2veglengdeAnalyse( sokeobjekt ):
     veglenkesekvens = {}
 
     for vl in sokeobjekt: 
+        vl['geometrilengde'] = vl['geometri']['lengde'] 
         vl = nvdbapiv3.flatutvegnettsegment( vl )
         vl['geometry'] = wkt.loads( vl['geometri'] )
-        vl['geometrilengde'] = vl['geometry'].length 
+        vl['geometrilengde2D'] = vl['geometry'].length 
         vl['lengdeavvik_m'] = vl['geometrilengde'] - vl['lengde']
         vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['geometrilengde'] 
 
@@ -71,6 +72,8 @@ def hentveglenkesekvens( veglenkesekvensId:int, forb=None, segmentert=False  ):
 
     KEYWORDS
         forb: None eller en forekomst av nvdbapiv3.  
+
+        segmenentert: False . Sett lik True hvis du ønsker analyse av segmentert vegnett
     """
     if not forb: 
         forb = nvdbapiv3.apiforbindelse()
@@ -96,10 +99,11 @@ def hentveglenkesekvens( veglenkesekvensId:int, forb=None, segmentert=False  ):
             data = r.json()
             if not segmentert:  
                 for vl in data['veglenker']: 
+                    vl['geometrilengde'] = vl['geometri']['lengde'] 
                     vl = nvdbapiv3.flatutvegnettsegment( vl )
                     vl['veglenkesekvensid'] = data['veglenkesekvensid']
                     vl['geometry'] = wkt.loads( vl['geometri']  )
-                    vl['geometrilengde'] = vl['geometry'].length 
+                    vl['geometrilengde2D'] = vl['geometry'].length 
                     vl['lengdeavvik_m'] = vl['geometrilengde'] - vl['lengde']
                     vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['geometrilengde'] 
                     vl['låst_lengde'] = data['låst_lengde']
@@ -110,10 +114,10 @@ def hentveglenkesekvens( veglenkesekvensId:int, forb=None, segmentert=False  ):
                 r2 = forb.les( '/vegnett/veglenkesekvenser/segmentert/' + str( VID ))
                 data2 = r2.json()
                 for vl in data2: 
+                    vl['geometrilengde'] = vl['geometri']['lengde'] 
                     vl = nvdbapiv3.flatutvegnettsegment( vl )
-
                     vl['geometry'] = wkt.loads( vl['geometri']  )
-                    vl['geometrilengde'] = vl['geometry'].length 
+                    vl['geometrilengde2D'] = vl['geometry'].length 
                     vl['lengdeavvik_m'] = vl['geometrilengde'] - vl['lengde']
                     vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['geometrilengde'] 
                     vl['låst_lengde'] = data['låst_lengde']

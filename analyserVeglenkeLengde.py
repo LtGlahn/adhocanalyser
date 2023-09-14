@@ -18,7 +18,15 @@ def sok2veglengdeAnalyse( sokeobjekt ):
     segmenter = []
     veglenkesekvens = {}
 
-    for vl in sokeobjekt: 
+    count = 0
+    for vl in sokeobjekt:
+        if count == 0: 
+            print( f"Henter {sokeobjekt.antall} vegsegmenter")
+        count += 1
+
+        if count == 1000 or count == 5000 or count % 10000 == 0: 
+            print( 'vegsegment', count, 'av', sokeobjekt.antall)
+
         vl['geometrilengde'] = vl['geometri']['lengde'] 
         vl = nvdbapiv3.flatutvegnettsegment( vl )
         vl['geometry'] = wkt.loads( vl['geometri'] )

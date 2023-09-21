@@ -4,7 +4,7 @@ Analyserer en veglenkesekvekvens for å sjekke dataintegritet lengde vegnett == 
 import pandas as pd
 import geopandas as gpd
 from shapely import wkt
-from tqdm import tqdm
+from datetime import datetime
 
 import STARTHER
 import nvdbapiv3 
@@ -15,6 +15,7 @@ def sok2veglengdeAnalyse( sokeobjekt ):
     Itererer over søkeobjekt nvdbapiv3.nvbdVegnett(), regner ut forhold mellom låst lengde / geometrisk lengde og returnerer GDF
     """
 
+    t0 = datetime.now()
     segmenter = []
     veglenkesekvens = {}
 
@@ -25,24 +26,25 @@ def sok2veglengdeAnalyse( sokeobjekt ):
         count += 1
 
         if count == 1000 or count == 5000 or count % 10000 == 0: 
-            print( 'vegsegment', count, 'av', sokeobjekt.antall)
+            print( 'vegsegment', count, 'av', sokeobjekt.antall, f"({count/sokeobjekt.antall:.2%})", "tidsbruk:", datetime.now()-t0)
 
         vl['geometrilengde'] = vl['geometri']['lengde'] 
         vl = nvdbapiv3.flatutvegnettsegment( vl )
         vl['geometry'] = wkt.loads( vl['geometri'] )
         vl['geometrilengde2D'] = vl['geometry'].length 
         vl['lengdeavvik_m'] = vl['geometrilengde'] - vl['lengde']
-        vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['geometrilengde'] 
+        # vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['geometrilengde'] 
+        # vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['lengde'] 
 
         # Henter veglenkesekvens for å sjekke låst lengde
         vid = vl['veglenkesekvensid']
         if not vid in veglenkesekvens: 
             r = sokeobjekt.forbindelse.les( '/vegnett/veglenkesekvenser/' + str(vid) )
-            if r.ok: 
+            if r.ok and len( r.text ) > 10: 
                 temp = r.json()
             else:
                 print( f"Fikk ikke hentet veglenkesekvens {vid} : HTTP {r.status_code} {r.text}")
-                temp = { 'låst_lengde' : None, 'lengdeTotal' : None }
+                temp = { 'låst_lengde' : None, 'lengde' : None }
 
             veglenkesekvens[vid] = { 
                     'låst_lengde' : temp['låst_lengde'], 
@@ -113,7 +115,8 @@ def hentveglenkesekvens( veglenkesekvensId:int, forb=None, segmentert=False  ):
                     vl['geometry'] = wkt.loads( vl['geometri']  )
                     vl['geometrilengde2D'] = vl['geometry'].length 
                     vl['lengdeavvik_m'] = vl['geometrilengde'] - vl['lengde']
-                    vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['geometrilengde'] 
+                    # vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['geometrilengde'] 
+                    vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['lengde'] 
                     vl['låst_lengde'] = data['låst_lengde']
 
                     veglenker.append( vl )
@@ -127,7 +130,8 @@ def hentveglenkesekvens( veglenkesekvensId:int, forb=None, segmentert=False  ):
                     vl['geometry'] = wkt.loads( vl['geometri']  )
                     vl['geometrilengde2D'] = vl['geometry'].length 
                     vl['lengdeavvik_m'] = vl['geometrilengde'] - vl['lengde']
-                    vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['geometrilengde'] 
+                    # vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['geometrilengde'] 
+                    vl['lengdeavvik_prosent'] =  100* vl['lengdeavvik_m'] / vl['lengde'] 
                     vl['låst_lengde'] = data['låst_lengde']
                     vl.pop( 'href', None )
                     vl.pop( 'geometri', None )
@@ -151,4 +155,15 @@ if __name__ == '__main__':
     # junk = hentveglenkesekvens( '0000')
     myGdf = hentveglenkesekvens( 121461 )
     myGdf2 = hentveglenkesekvens( 121461, segmentert=True )
+
+
+if __name__ == '__main__': 
+    myGdf = sok2veglengdeAnalyse( nvdbapiv3.nvdbVegnett( filter={'vegsystemreferanse' : 'E,R,F'}))
+    myGdf['vegkart'] = myGdf['referanse'].apply( lambda x : 'http://vegkart.atlas.vegvesen.no/#veglenke:' + x.replace( '-', ':'))
+    myGdf['vegstrekning'] = myGdf['vref'].apply( lambda x : ' '.join( x.split()[0:2]))
+    myGdf['lengdeavvik_abs_m'] = myGdf['lengdeavvik_m'].abs()
+    col = ['vegnummer', 'vegstrekning', 'vref', 'referanse', 'typeVeg', 'lengde', 'geometrilengde', 'lengdeavvik_m', 'lengdeavvik_abs_m', 'vegkart' ]
+    storeAvvik = myGdf[ ( myGdf['lengdeavvik_abs_m'] > 20) ].sort_values( by='lengdeavvik_abs_m', ascending=False)
+    nvdbgeotricks.skrivexcel('lengdeavvik_over20m_alleTopologinivå.xlsx',  storeAvvik[col] )
+    storeAvvik[col+['geometry']].to_file( 'lengdeavvik_over20m_alleTopologinivå.gpkg', layer='lengdeavvik_over_20m', driver='GPKG')
 

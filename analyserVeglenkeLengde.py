@@ -161,8 +161,9 @@ if __name__ == '__main__':
     myGdf = sok2veglengdeAnalyse( nvdbapiv3.nvdbVegnett( filter={'vegsystemreferanse' : 'E,R,F'}))
     myGdf['vegkart'] = myGdf['referanse'].apply( lambda x : 'http://vegkart.atlas.vegvesen.no/#veglenke:' + x.replace( '-', ':'))
     myGdf['vegstrekning'] = myGdf['vref'].apply( lambda x : ' '.join( x.split()[0:2]))
+    myGdf['vegnummer'] = myGdf['vref'].apply( lambda x: x.split()[0])
     myGdf['lengdeavvik_abs_m'] = myGdf['lengdeavvik_m'].abs()
-    col = ['vegnummer', 'vegstrekning', 'vref', 'referanse', 'typeVeg', 'lengde', 'geometrilengde', 'lengdeavvik_m', 'lengdeavvik_abs_m', 'vegkart' ]
+    col = ['vegnummer', 'vegstrekning', 'vref', 'referanse', 'typeVeg', 'detaljnivå', 'lengde', 'geometrilengde', 'lengdeavvik_m', 'lengdeavvik_abs_m', 'vegkart' ]
     storeAvvik = myGdf[ ( myGdf['lengdeavvik_abs_m'] > 20) ].sort_values( by='lengdeavvik_abs_m', ascending=False)
     nvdbgeotricks.skrivexcel('lengdeavvik_over20m_alleTopologinivå.xlsx',  storeAvvik[col] )
     storeAvvik[col+['geometry']].to_file( 'lengdeavvik_over20m_alleTopologinivå.gpkg', layer='lengdeavvik_over_20m', driver='GPKG')

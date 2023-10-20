@@ -62,6 +62,14 @@ if __name__ == '__main__':
 
 
     segmentert.to_file( filnavn )
+
+    # vil du heller ha Esri fil-geodatabase? (.GDB, også kalt FGDB)
+    # filnavn =  'oslo_segmentertveg_' + str( datetime.now() )[0:10] + '.gdb'
+    # segmentert.to_file( filnavn,  driver= 'OpenFileGDB' )
+    # 
+    # Eventuelt gi ditt eget navn på vegnettet
+    # segmentert.to_file( filnavn, layer='vegnett', driver= 'OpenFileGDB' )
+
 ##############################################################
 ###
 ### Resultat fra kjøring på Jans PC 

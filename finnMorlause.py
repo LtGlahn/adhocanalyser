@@ -76,15 +76,21 @@ def morlaus( sokeobjekt ):
 
         morlause = gpd.GeoDataFrame( morlause, geometry=morlause['geometri'].apply( wkt.loads ), crs=5973 )
         kolonner = list( morlause.columns )
-        slettes = ['stedfesting_detaljer', 'vegsegmenter', 'vegsystemreferanser', 'geometri', 'Geometri', 'nvdbId', 'vegkategori', 'vegnummer', 'vegsystemreferanser', 'objekttype'  ]
-        for slett in slettes: 
+        morlause['vegkart'] = morlause['nvdbId'].apply( lambda x : 'https://vegkart.atlas.vegvesen.no/#valgt:' + str( x )  + ':' + str( sokeobjekt.objektTypeId)  ) 
+        slettes = [ 'stedfesting', 'relasjoner', 'vegsegmenter', 
+                   'Geometri, punkt',  'Geometri, linje', 'Geometri, flate', 'geometri', 'Geometri'  ]
+        flyttes_frem = [ 'objekttype', 'nvdbId', 'vegkategori', 'vegnummer', 'vegkart',  'vegsystemreferanser']
+        flyttes_bak = ['stedfesting_detaljer' ]
+        for slett in flyttes_frem+slettes+flyttes_bak: 
             if slett in kolonner: 
                 kolonner.remove( slett )
 
         if 'stedfesting_detaljer' in morlause:
             kolonner.append( 'stedfesting_detaljer' )
+        else: 
+            kolonner.append( 'stedfesting')
 
-        kolonner = [ 'objekttype', 'nvdbId', 'vegkategori', 'vegnummer', 'vegsystemreferanser'] + kolonner 
+        kolonner = flyttes_frem + kolonner 
         # Spesialhåndtering kontraktsområde
         mittFilter = sok.filter()
         if 'kontraktsomrade' in mittFilter: 
@@ -100,7 +106,7 @@ def morlaus( sokeobjekt ):
 
 if __name__ == '__main__': 
     pd.options.display.float_format = '{:.2f}'.format
-    dakat = lesBestillingsregneark( 'NVDB Objekter - Elektro og tunnel fase 1.xlsx' )
+    dakat = lesBestillingsregneark( 'NVDB_ObjekterElektro_og_tunnelfase1.xlsx' )
 
     sammendrag = []
 
@@ -122,7 +128,7 @@ if __name__ == '__main__':
 
         data_utenmor = [ ]
         print( '##########################################################################################')
-        print( f"##\n##\n## Henter objekttype {ii+1} av {len( dakat)} - {objType['id']} {objType['VT_Navn']}\n##\n##")
+        print( f"##\n##\n## Henter objekttype {ii+1} av {len( dakat)}: {objType['id']} {objType['VT_Navn']}\n##\n##")
         print( '##########################################################################################')
 
         for kontrakt in kontrakter:
@@ -172,11 +178,15 @@ if __name__ == '__main__':
     sammendrag = pd.DataFrame( sammendrag )
     sammendrag = pd.merge( dakat[['id', 'VT_Navn', 'Må ha mor', 'Kan ha mor']], sammendrag, on='id' )
 
+    print( f"Lagrer til excel, tidsbruk så langt: {datetime.now()-t0}")
     excelDump = [ sammendrag ]
     excelFaneNavn = [ 'Statistikk' ]
     for fane in resultater.keys(): 
         excelDump.append( resultater[fane] )
         excelFaneNavn.append( fane[0:30] )
+
+    print( f"Lagrer til geopackage, tidsbruk så langt: {datetime.now()-t0}")
+    for fane in resultater.keys(): 
         resultater[fane].to_file( 'pilotkontraktar_morlause.gpkg', layer=fane[0:30], driver='GPKG'   )
 
     nvdbgeotricks.skrivexcel( 'pilotkontraktar_morlause.xlsx', excelDump, sheet_nameListe=excelFaneNavn )

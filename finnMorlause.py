@@ -77,7 +77,7 @@ def morlaus( sokeobjekt ):
         morlause = gpd.GeoDataFrame( morlause, geometry=morlause['geometri'].apply( wkt.loads ), crs=5973 )
         kolonner = list( morlause.columns )
         morlause['vegkart'] = morlause['nvdbId'].apply( lambda x : 'https://vegkart.atlas.vegvesen.no/#valgt:' + str( x )  + ':' + str( sokeobjekt.objektTypeId)  ) 
-        slettes = [ 'stedfesting', 'relasjoner', 'vegsegmenter', 
+        slettes = [ 'stedfesting', 'relasjoner', 'vegsegmenter', 'stedfestinger', 
                    'Geometri, punkt',  'Geometri, linje', 'Geometri, flate', 'geometri', 'Geometri'  ]
         flyttes_frem = [ 'objekttype', 'nvdbId', 'vegkategori', 'vegnummer', 'vegkart',  'vegsystemreferanser']
         flyttes_bak = ['stedfesting_detaljer' ]
@@ -85,10 +85,10 @@ def morlaus( sokeobjekt ):
             if slett in kolonner: 
                 kolonner.remove( slett )
 
-        if 'stedfesting_detaljer' in morlause:
+        if 'stedfesting_detaljer' in morlause.columns:
             kolonner.append( 'stedfesting_detaljer' )
         else: 
-            kolonner.append( 'stedfesting')
+            kolonner.append( 'stedfestinger')
 
         kolonner = flyttes_frem + kolonner 
         # Spesialhåndtering kontraktsområde
@@ -124,6 +124,7 @@ if __name__ == '__main__':
     sammendrag = []
     resultater = { }
     # dakat2 = dakat[ dakat['id'].isin( [212, 458] ) ]
+    # for ii, objType in dakat2.iterrows(): 
     for ii, objType in dakat.iterrows(): 
 
         data_utenmor = [ ]
@@ -162,7 +163,7 @@ if __name__ == '__main__':
             sammendrag.append( { 'Kontraktsområde' : kontrakt, 'id' : objType['id'], 'Antall uten mor' : len( utenMor ), 'Antall med mor' : len( harMor ), 
                                 'I tunnel uten mor' : len( utenMorItunnel), 'I tunnel med mor' : len( harMorItunnel )  } )
 
-            print( f"Kontrakt {kontrakt} Hentet { len(utenMor)+len(harMor) } objekter, {len(utenMor)} morlause av type {objType['id']} {objType['VT_Navn']} \t\tTidsbruk{datetime.now()-t0}")
+            print( f"Kontrakt {kontrakt} Hentet { len(utenMor)+len(harMor) } objekter, {len(utenMor)} morlause av type {objType['id']} {objType['VT_Navn']} \t\tTidsbruk: {datetime.now()-t0}")
             if len( utenMor) > 0:
                 data_utenmor.append( utenMor )
         
@@ -171,6 +172,7 @@ if __name__ == '__main__':
             data_utenmor = pd.concat( data_utenmor )
             kolonner = list( data_utenmor.columns )
             data_utenmor = data_utenmor.sjoin_nearest( tunnel[['nvdbId Tunnelløp', 'Navn tunnelløp', 'geometry']], how='left', distance_col='Avstand tunnelløp' )
+            data_utenmor['Avstand tunnelløp'] = data_utenmor['Avstand tunnelløp'].astype( int )
             kolonner = ['Avstand tunnelløp', 'nvdbId Tunnelløp', 'Navn tunnelløp'] + kolonner 
 
             resultater[str(objType['id']) + ' ' + nvdbapiv3.esriSikkerTekst( objType['VT_Navn']) ] = data_utenmor[kolonner]

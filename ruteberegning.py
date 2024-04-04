@@ -150,3 +150,10 @@ if __name__ == '__main__':
 
     cscvump_store2covenant = rute_store2covenant.drop( columns='geometry')
     cscvump_store2covenant.to_csv( 'rute_store2covenant.csv' )
+
+    # Lagrer de ruteforslagene som feiler. Disse har den orginale start-slutt geometrien. 
+    if len(rute_store2store[ ~rute_store2store['message'].isnull() ] ) > 0: 
+        rute_store2store[ ~rute_store2store['message'].isnull() ].to_file( 'feilmeldinger.gpkg', layer='feilrute_store2store', driver='GPKG' )
+
+    if len( rute_store2covenant[ ~rute_store2covenant['message'].isnull() ] ) > 0: 
+        rute_store2covenant[ ~rute_store2covenant['message'].isnull() ].to_file( 'feilmeldinger.gpkg', layer='feilrute_store2covenant', driver='GPKG' )

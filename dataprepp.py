@@ -1,7 +1,8 @@
 """
 Dataprepp for fattigmanns nettverksanalyse 
 
-Leser CSV-fil med start- og målpunkt og forberder 
+Leser CSV-fil med start- og målpunkt og lager geometri fra start til sluttpunkt, og 
+konverterer til UTM sone 33 (EPSG:25833)
 """
 
 import pandas as pd

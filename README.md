@@ -17,6 +17,10 @@ Ruteplantjenesten vil "snappe" start- og sluttpunkt til nærmeste punkt på det 
 
 Svaret fra ruteplantjenesten inneholder en liste med ett eller inntil tre ruteforslag, vi velger konsekvent det første (beste/korteste) forslaget i listen. Denne ruten har igjen en overordnet beskrivelse med statistikk og minst ett - men gjerne mange - segmenter, på formatet [gejoson](https://geojson.org/) featurecollection. Det siste objektet i samlingen er et linjeobjekt med lengde 0 og egenskapen `maneuverType=EsriDmtStop`. Dette objektet filtreres ut. De øvrige objektene slås sammen til ett sammenhengende linjeobjekt, slik at vi har ett sammenhengende geografisk objekt for hele ruten. Vi henter ut noen av egenskapene fra statistikkdelen (kjøretid, lengde ruteforslag, lengde som evt er på ferje) og lagrer objektet. 
 
+### (Manglende) autentisering
+
+Merk at denne koden er laget for å kjøre på innsiden av Vegvesenets datanettverk. Derfor har vi ikke implementert kode for autentisering (http basic auth). Kodemessig er slik pålogging ukomplisert, men det stresser infrastrukturen unødvendig når vi skal gjøre ca 200.000 oppslag raskest mulig.  
+
 ### Feilhåndtering 
 
 Noen steder havner start- eller sluttpunktet på en  "øy" adskilt fra det øvrige vegnettet. Dette er gjerne et lukket område (f.eks et torgområde eller serviceveger på kjøpesenter) der man har kjørbart vegnett - men publikum har ikke lov til å kjøre inn dit. Typisk står det en vegsperring eller innkjøring forbudt restriksjon som blokkerer navigasjon. 

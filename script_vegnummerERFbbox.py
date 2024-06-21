@@ -22,13 +22,15 @@ def datamassasje( minGDF:gpd.GeoDataFrame ):
 
     return minGDF
 
+
+
 if __name__ == '__main__': 
 
     t0 = datetime.now()
 
     mineVegnummer = { }
     vegsok = nvdbapiv3.nvdbVegnett( filter={'vegsystemreferanse' : 'Ev,Rv,Fv', 'trafikantgruppe' : 'K', 
-                                            'sideanlegg' : False, 'detaljniva' : 'VT,VTKB', 'fylke' : 3 })
+                                            'sideanlegg' : False, 'detaljniva' : 'VT,VTKB' }) #, 'fylke' : 3 })
 
 
     myDf = pd.DataFrame( vegsok.to_records() )
@@ -38,12 +40,11 @@ if __name__ == '__main__':
 
 
     # Forenkler geometri, med ulik toleranse tilpasset forskjellige zoomlevels. 
-    # Må bli litt prøving og feiling for å komme i mål her. 
+    # Må bli litt prøving og feiling for å finne riktig kompromiss mellom dataminimering og pen opptegning 
     myGdf_3m = myGdf.copy()
     myGdf_25m = myGdf.copy()
     myGdf_3m['geometry']  = myGdf_3m['geometry'].apply(  lambda x: simplify( x, tolerance=3))
     myGdf_25m['geometry'] = myGdf_25m['geometry'].apply( lambda x: simplify( x, tolerance=25))
-
 
     vegnr_perfylke_25m   = datamassasje( myGdf_25m[['vegnr', 'fylke', 'geometry']].dissolve( by=['fylke', 'vegnr']).reset_index() ) 
     vegnr_helelandet_25m = datamassasje( myGdf_25m[['vegnr',          'geometry']].dissolve( by=['vegnr']).reset_index() )
@@ -54,10 +55,15 @@ if __name__ == '__main__':
     # Orginaloppløsning for å ha et sammenligningsgrunnlag
     vegnr_orginal        = datamassasje( myGdf[['vegnr',          'geometry']].dissolve( by=['vegnr']).reset_index() )
 
+    # Lagrer CSV 
+    cols = list( vegnr_perfylke_25m.columns)
+    cols.remove( 'geometry')
+    vegnr_perfylke_25m[cols].to_csv( 'vegnummerdemo_perfylke.csv', sep=';' )
+    cols.remove( 'fylke')
+    vegnr_helelandet_25m[cols].to_csv( 'vegnummerdemo_helelandet.csv', sep=';' )
+
     gpkgfil = 'vegnummerdemo.gpkg'
     vegnr_orginal.to_file( gpkgfil, layer='Vegnummer orginal oppløsning', driver='GPKG' )
     vegnr_perfylke_3m.to_file( gpkgfil, layer='Vegnummer 3m toleranse', driver='GPKG' )
     vegnr_perfylke_25m.to_file( gpkgfil, layer='Vegnummer 25m toleranse', driver='GPKG' )
-
-
 

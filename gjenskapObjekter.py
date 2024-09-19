@@ -192,7 +192,7 @@ def stedfest( nvdbData, startdato=None, datakatalogversjon=None, maks_antall=10 
     for objId in myDict.keys():
         count += 1  
         geom = deepcopy(myDict[objId]['geometri'] )
-        geom['wkt'] = forenkleGeometri( geom['wkt'], 4999)
+        # geom['wkt'] = forenkleGeometri( geom['wkt'], 4999)
         # geom['wkt'] = forenkleGeometri( geom['wkt'], 9000 ) 
         geom.pop( 'egengeometri', None )
         etSted = {  'typeId' : myDict[objId]['metadata']['type']['id'], 
@@ -202,7 +202,7 @@ def stedfest( nvdbData, startdato=None, datakatalogversjon=None, maks_antall=10 
                     },
                     "geometri" : geom
         }
-        # print( f"Tekstlengde WKT {etSted['tempId']:12} rad{count:4} {len(etSted['geometri']['wkt']):5}")
+        print( f"Tekstlengde WKT {etSted['tempId']:12} rad{count:4} {len(etSted['geometri']['wkt']):5}")
         if objId in mor: 
             # Føyer på info om mor-relasjon 
             etSted['mor'] =  { 
@@ -247,7 +247,7 @@ def stedfest( nvdbData, startdato=None, datakatalogversjon=None, maks_antall=10 
 
     # Iterer over resten av objektene (som da ikke har relasjoner)
     count = 0 
-    # maks_antall = 20 # Antall objekt av gangen i samme liste
+    # maks_antall = PARAMETERSTYRT # Antall objekt av gangen i samme liste
     tempListe = []
     for objId in stedObjekter.keys(): 
         count += 1 
@@ -287,7 +287,7 @@ def stedfest( nvdbData, startdato=None, datakatalogversjon=None, maks_antall=10 
         countObjekt += len( liste )
         print( f"Iterasjon {count} av {len(stedfestingObjektListe)}, {len(liste)} objekter, totalt {countObjekt}")
 
-        url = 'https://nvdbstedfesting.atlas.vegvesen.no/api/v1/stedfest'
+        url = 'https://nvdbstedfesting.test.atlas.vegvesen.no/api/v1/stedfest'
         headers={ 'accept' : 'application/json', 'Content-Type' : 'application/json' }
         r = requests.post( url, headers=headers, data=json.dumps( sted )  )
         if r.ok: 
@@ -433,4 +433,4 @@ def lagreGPKG( myDict:dict, filnavn:str, layerPrefix='' ):
 
 if __name__ == '__main__': 
     gamledata = gjenskapFraCsv( 'Gjenåpning_Ånestad-csv.csv', 'FID', 'EDATE', 20200730, sep=';', encoding='latin1' )
-    myDict = stedfest( gamledata, startdato='2020-07-30' )
+    myDict = stedfest( gamledata, startdato='2020-07-30', maks_antall=2 )

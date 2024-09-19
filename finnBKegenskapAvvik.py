@@ -29,7 +29,9 @@ if __name__ == '__main__':
     bk905 = nvdbapiv3.nvdbFagdata(905 )
 
     forb = nvdbapiv3.apiforbindelse()
-    forb.login( miljo='prodles')
+    # forb.login( miljo='prodles')
+    # forb.login( miljo='testles')
+    forb.login( miljo='utvles')
     bk901.forbindelse = forb
     bk905.forbindelse = forb
 
@@ -55,6 +57,7 @@ if __name__ == '__main__':
     if not 'Bruksklasse vinter' in df901.columns:
         df901['Bruksklasse vinter'] = ''
 
+
     t2 = datetime.now()
     bkOverlapp = overlapp.finnoverlapp( df905, df901)
     print( f"Overlapp tidsbruk: {datetime.now()-t2}")
@@ -62,6 +65,8 @@ if __name__ == '__main__':
 
     avvik = bkOverlapp[ (bkOverlapp['Bruksklasse']          != bkOverlapp['t901_Bruksklasse']) | 
                         (bkOverlapp['Bruksklasse vinter']   != bkOverlapp['t901_Bruksklasse vinter']) ]
+    
+    avvik_orginal = avvik.copy()
 
     # Filtrerer ut fra regneark med gyldige og ugyldige kombinasjoner 
     # (en tidligere versjon av 'kombinasjonerBKnormal_tommer.xlsx' som Tone har kommentert på)
@@ -86,6 +91,7 @@ if __name__ == '__main__':
 
     avvik = avvik.copy()
 
+
     # Finner alle mulige datakombinasjoner: 
     kombo = avvik.groupby( ['Bruksklasse', 't901_Bruksklasse', 
                     'Bruksklasse vinter', 't901_Bruksklasse vinter']).agg( {'t901_nvdbId' : 'nunique', 
@@ -103,8 +109,43 @@ if __name__ == '__main__':
             'typeVeg', 
             'veglenkeType', 'segmentlengde', 'adskilte_lop', 'trafikantgruppe', 'nvdbId', 'versjon', 't901_nvdbId', 't901_versjon', 
             'veglenkesekvensid', 'startposisjon', 'sluttposisjon', 'geometry' ]
+            
+    # ## Fjerner Maks tillatt totalvekt, den finnes ikke lenger? 
+    # col = [ 'kommune', 'fylke', 'vref', 'vegkategori', 'fase', 'vegnummer', 'Bruksklasse', 't901_Bruksklasse', 
+            # 'Bruksklasse vinter', 't901_Bruksklasse vinter', 'Maks vogntoglengde', 't901_Maks vogntoglengde', 
+            # 't901_Tillatt for modulvogntog 1 og 2 med sporingskrav', 'Strekningsbeskrivelse', 't901_Strekningsbeskrivelse', 'kommentarer',
+            # 'typeVeg', 
+            # 'veglenkeType', 'segmentlengde', 'adskilte_lop', 'trafikantgruppe', 'nvdbId', 'versjon', 't901_nvdbId', 't901_versjon', 
+            # 'veglenkesekvensid', 'startposisjon', 'sluttposisjon', 'geometry' ]
+            
 
     avvik.sort_values( by=['fase', 'vegkategori', 'fylke', 'Bruksklasse', 'vref' ], inplace=True )
 
-    nvdbgeotricks.skrivexcel( 'helenorge_avvikBKnormal_VS_BKtommer.xlsx', avvik[col] )
-    avvik[col].to_file( 'helenorge_avvikBKnormal_VS_BKtommer.gpkg', layer='avvikBKnormal_tommer', driver='GPKG'  )
+    # nvdbgeotricks.skrivexcel( 'helenorge_avvikBKnormal_VS_BKtommer.xlsx', avvik[col] )
+    # avvik[col].to_file( 'helenorge_avvikBKnormal_VS_BKtommer.gpkg', layer='avvikBKnormal_tommer', driver='GPKG'  )
+
+
+    # Ser på datavariasjon for dem som har maks totalvekt - egenskap
+    # Da må vi se på ALLE data, ikke bare dem der BK normal og tømmer har ulike verdier
+    medVekt = bkOverlapp[ bkOverlapp['t901_Utgår_Maks totalvekt'] != '' ]
+    kombo_medvekt = medVekt.groupby( [ 'Bruksklasse', 't901_Bruksklasse', 
+                    'Bruksklasse vinter', 't901_Bruksklasse vinter', 't901_Utgår_Maks totalvekt'] ).agg( 
+                                                                {'t901_nvdbId' : 'nunique',
+                                                                'segmentlengde' : 'sum' } ).reset_index()
+
+
+
+
+    # harVektverdi = avvik_orginal[ avvik_orginal['t901_Utgår_Maks totalvekt'] != '' ]
+    # kombo_medvekt = harVektverdi.groupby( [ 'Bruksklasse', 't901_Bruksklasse', 
+    #                 'Bruksklasse vinter', 't901_Bruksklasse vinter', 't901_Utgår_Maks totalvekt'] ).agg( 
+    #                                                             {'t901_nvdbId' : 'nunique',
+    #                                                             'segmentlengde' : 'sum' } ).reset_index()
+
+    kombo_medvekt = pd.merge( kombo_medvekt, gyldigRegneark[ gyldig_col + ['kommentarer']], on=gyldig_col, how='left' )
+    kombo_medvekt.sort_values( by='segmentlengde', inplace=True, ascending=False  )
+    harVektverdi = pd.merge( medVekt, gyldigRegneark[ gyldig_col + ['kommentarer']], on=gyldig_col, how='left')
+    harVektverdi[col].to_file( 'BKtommerMedMaksTotalvekt_UTV_ETTERscript.gpkg', layer='kunVektverdi', driver='GPKG')
+
+    nvdbgeotricks.skrivexcel( 'BKtommerMedMaksTotalvekt_UTV_ETTERscript.xlsx', [kombo_medvekt, harVektverdi[col] ], 
+                              sheet_nameListe=['Statistikk', 'Alle objekter'])

@@ -129,12 +129,14 @@ if __name__ == '__main__':
                 alleGaleObj.append( etObj )
                 countKorrigert += 1 
 
-            if countsok % 10000 == 0: 
-                print( f"\tSøk {countsok} av {sok.antall} for objekttype {objType}")
+            # if countsok % 10000 == 0: 
+            #     print( f"\tSøk {countsok} av {sok.antall} for objekttype {objType}")
 
             # if countKorrigert >= 1000: 
             #     break 
    
         print( f"Objekttype {objType}: Fant {countKorrigert} etter å ha sjekket {countsok} objekt. Feilrate: {round( 100 * countKorrigert / countsok )} %")
     
+    print( f"Tidsbruk totalt: {datetime.now()-t0}")
+
     mydf = pd.DataFrame( galeGeom)

@@ -103,6 +103,7 @@ def finnUgyldigeMetadata( mittObj:dict ):
 
 galeGeom = []
 alleGaleObj = []
+objTotalt = 0
 
 if __name__ == '__main__': 
 
@@ -132,6 +133,7 @@ if __name__ == '__main__':
         countKorrigert = 0
         for etObj in sok: 
             countsok += 1 
+            objTotalt += 1
             FEILER = finnUgyldigeMetadata( etObj  )
             if FEILER: 
                 alleGaleObj.append( etObj )
@@ -145,6 +147,7 @@ if __name__ == '__main__':
    
         print( f"Objekttype {objType:4}:  {countKorrigert:7} ugyldige av {countsok:8} objekt. Feilrate: {round( 100 * countKorrigert / countsok ):3} %")
     
+    print( f"TOTALT i NVDB: {len(alleGaleObj)} ugyldige av {objTotalt}. Feilrate {round( 100 * len(alleGaleObj) / objTotalt ):3} %")
     print( f"Tidsbruk totalt: {datetime.now()-t0}")
 
     mydf = pd.DataFrame( galeGeom)

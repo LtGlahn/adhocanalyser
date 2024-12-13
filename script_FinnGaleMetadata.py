@@ -107,7 +107,15 @@ alleGaleObj = []
 if __name__ == '__main__': 
 
     t0 = datetime.now()
-    for objType in [5, 14, 7, 199, 95, 96]:
+    dakat = requests.get( 'https://nvdbapiles.atlas.vegvesen.no/vegobjekttyper').json()
+    geometriObjektTyper = []
+    for objType in dakat: 
+        for eg in objType['egenskapstyper']: 
+            if eg['egenskapstype'] == 'Geometri': 
+                geometriObjektTyper.append( objType['id'])
+
+    # for objType in [5, 14, 7, 199, 95, 96]:
+    for objType in geometriObjektTyper:
 
         # print( f"Analyserer objekttype {objType}")
 
@@ -132,10 +140,10 @@ if __name__ == '__main__':
             # if countsok % 10000 == 0: 
             #     print( f"\tSøk {countsok} av {sok.antall} for objekttype {objType}")
 
-            # if countKorrigert >= 1000: 
+            # if countKorrigert >= 4: 
             #     break 
    
-        print( f"Objekttype {objType}: Fant {countKorrigert} etter å ha sjekket {countsok} objekt. Feilrate: {round( 100 * countKorrigert / countsok )} %")
+        print( f"Objekttype {objType:4}:  {countKorrigert:7} ugyldige av {countsok:8} objekt. Feilrate: {round( 100 * countKorrigert / countsok ):3} %")
     
     print( f"Tidsbruk totalt: {datetime.now()-t0}")
 

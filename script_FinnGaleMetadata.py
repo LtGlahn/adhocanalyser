@@ -33,14 +33,14 @@ def sjekkGeometriMetadata( egenskap:dict ):
 
     try:             
     
-        if egenskap['kvalitet']['datafangstmetode'] not in datafangstmetoder: 
-            return True 
+        # if egenskap['kvalitet']['datafangstmetode'] not in datafangstmetoder: 
+        #     return True 
         
-        if egenskap['kvalitet']['nøyaktighet'] < 0: 
-            return True 
+        # if egenskap['kvalitet']['nøyaktighet'] < 0: 
+        #     return True 
 
-        if egenskap['kvalitet']['synbarhet'] not in syntbarhet: 
-            return True 
+        # if egenskap['kvalitet']['synbarhet'] not in syntbarhet: 
+        #     return True 
 
         # Objekter med XYZ-geometri skal også ha datafangstmetode høyde og nøyaktighet høyde.
         geometri = from_wkt( egenskap['verdi'] )
@@ -111,12 +111,17 @@ if __name__ == '__main__':
     dakat = requests.get( 'https://nvdbapiles.atlas.vegvesen.no/vegobjekttyper').json()
     geometriObjektTyper = []
     for objType in dakat: 
-        for eg in objType['egenskapstyper']: 
-            if eg['egenskapstype'] == 'Geometri': 
-                geometriObjektTyper.append( objType['id'])
+        if objType['id'] in [562 ]: 
+            pass
+        else: 
+            for eg in objType['egenskapstyper']: 
+                if eg['egenskapstype'] == 'Geometri': 
+                    geometriObjektTyper.append( objType['id'])
+                    break 
 
     # for objType in [5, 14, 7, 199, 95, 96]:
-    for objType in geometriObjektTyper:
+    # for objType in geometriObjektTyper:
+    for objType in [3, 95]:
 
         # print( f"Analyserer objekttype {objType}")
 
@@ -131,21 +136,27 @@ if __name__ == '__main__':
 
         countsok = 0 
         countKorrigert = 0
+        count_manglerKValitet = 0
         for etObj in sok: 
             countsok += 1 
             objTotalt += 1
             FEILER = finnUgyldigeMetadata( etObj  )
             if FEILER: 
-                alleGaleObj.append( etObj )
-                countKorrigert += 1 
+                geom = [ x for x in etObj['egenskaper'] if x['egenskapstype'] == 'Geometri']
+                if 'kvalitet' in geom[0]: 
+                    alleGaleObj.append( etObj )
+                    countKorrigert += 1 
+                else: 
+                    count_manglerKValitet += 1 
 
             # if countsok % 10000 == 0: 
             #     print( f"\tSøk {countsok} av {sok.antall} for objekttype {objType}")
 
-            # if countKorrigert >= 4: 
-            #     break 
+            if countKorrigert >= 2: 
+                break 
    
         print( f"Objekttype {objType:4}:  {countKorrigert:7} ugyldige av {countsok:8} objekt. Feilrate: {round( 100 * countKorrigert / countsok ):3} %")
+        print( f"{count_manglerKValitet} objekt av {countsok} objekt er totalt uten kvalitetsinformasjon {round( 100 * count_manglerKValitet / countsok ):3} % ")
     
     print( f"TOTALT i NVDB: {len(alleGaleObj)} ugyldige av {objTotalt}. Feilrate {round( 100 * len(alleGaleObj) / objTotalt ):3} %")
     print( f"Tidsbruk totalt: {datetime.now()-t0}")

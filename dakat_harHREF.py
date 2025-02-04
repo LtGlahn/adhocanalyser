@@ -19,6 +19,7 @@ for obj in dakat:
         mal['Antall geometrier'] = len( geomTyper )
         for geom in geomTyper: 
             record = deepcopy(mal )
+            record['egenskapsId'] = geom['id']
             record['navn'] = geom['navn']
             record['viktighet'] = geom['viktighet']
             valgfrie = ['høydereferanse', 'høydereferanse_tall' ]

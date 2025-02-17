@@ -8,6 +8,9 @@ from copy import deepcopy
 import STARTHER
 import nvdbapiv3 
 
+headers = { "X-Client" : "nvdbapi.py fra Nvdb gjengen, vegdirektoratet",
+ "X-Kontaktperson" : "jan.kristian.jensen@vegvesen.no" }
+
 dakat = requests.get( 'https://nvdbapiles-v3.atlas.vegvesen.no/vegobjekttyper').json()
 data = []
 for obj in dakat: 
@@ -18,7 +21,7 @@ for obj in dakat:
         print( f"{obj['id']} {obj['navn']}")
 
         mal = { 'objtype' : obj['id'] , 'Navn' : obj['navn']}   
-        objDakat = requests.get( 'https://nvdbapiles-v3.atlas.vegvesen.no/vegobjekttyper/' + str( obj['id'])).json()
+        objDakat = requests.get( 'https://nvdbapiles-v3.atlas.vegvesen.no/vegobjekttyper/' + str( obj['id']), headers=headers ).json()
         geomTyper = [ x for x in objDakat['egenskapstyper'] if 'eometri' in x['navn']]
         mal['Antall geometrier'] = len( geomTyper )
         for geom in geomTyper: 
@@ -43,5 +46,6 @@ for obj in dakat:
 
 mydf = pd.DataFrame( data )
 
-resultat = mydf.groupby( ['objtype', 'Navn', 'Antall geometrier', 'ETnavn', 'ETviktighet', 'DAKAT høydereferanse_tall', 'vegobjekt_høydereferanse'], dropna=False).agg( { 'vegobjektId' : 'count' } ).reset_index()
-resultat.to_excel( 'nvdbobjMedHREF.xlsx', index=False )
+
+# resultat = mydf.groupby( ['objtype', 'Navn', 'Antall geometrier', 'ETnavn', 'ETviktighet', 'DAKAT høydereferanse_tall', 'vegobjekt_høydereferanse'], dropna=False).agg( { 'vegobjektId' : 'count' } ).reset_index()
+# resultat.to_excel( 'nvdbobjMedHREF.xlsx', index=False )

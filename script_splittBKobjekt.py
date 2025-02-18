@@ -52,15 +52,20 @@ if __name__ == '__main__':
     #             778614290,  # Tømmer uoff
     #             778628528  ]  # Spesial uoff 
 
-    endreDisse = [ 330121543
-             ]
+    endreDisse = [ 1019363692, 1019363693, 1019363690, 1019054613, 1019282295, 1019363691, 1019363694, 1018354750  ]
+    # endreDisse = [             1019363693, 1019363690, 1019054613, 1019282295, 1019363691, 1019363694, 1018354750  ]
+    # endreDisse = [ 1019363692  ]
 
+
+    # # TESTPROD data
+    # endreDisse = [ 1022090246, 1022090241, 1022090260, 1022090369, 1022090320, 1022090298, 1022090296, 1022090284, 1022090336, 1022090332  ]
 
     skrivemal = None 
 
     forb = nvdbapiv3.apiforbindelse()
     # if not forb.+
     forb.login( miljo='prodles')
+    # forb.login( miljo='testles')
     count = -100
     debug = []
     for minId in endreDisse: 
@@ -71,16 +76,21 @@ if __name__ == '__main__':
         data['strekningsnummer'] = data['vref'].apply( lambda x : int( x.split()[1].split('D')[0][1:] ) )
         data['delstrekningsnummer'] = data['vref'].apply( lambda x : int( x.split()[1].split('D')[1] ))
         data['vegnr-strekning'] =  data['vref'].apply( lambda x : x.split()[0] +  ' ' + str( x.split()[1].split('D')[0].lower()  ) )
+        data['kryssdel'] = data['vref'].apply( lambda x : x.split()[2] + x.split()[3] if 'KD' in x else 'KD0'  )
+        data['oppdeling'] = data['vegnr-strekning'] + 'd' +  data['delstrekningsnummer'].astype(str) + data['kryssdel'] + data['adskilte_lop']
+
         debug.append( data )
+
         # lokasjon = skrivnvdb.lokasjon2skriv( [x for x in obj['egenskaper'] if x['navn'] == 'Liste av lokasjonsattributt' ][0] )
 
         denneObjType = skrivnvdb.fagdata2skrivemal( obj , operasjon='registrer'  )
 
 
-        for strnr in data['vegnr-strekning'].unique(): 
+        # for strnr in data['vegnr-strekning'].unique(): 
+        for strnr in data['oppdeling'].unique(): 
             count = count -1 
             egensk =  deepcopy( denneObjType['registrer']['vegobjekter'][0])
-            egensk['stedfesting']  = df2veglenkepos( data[ data['vegnr-strekning'] == strnr ])
+            egensk['stedfesting']  = df2veglenkepos( data[ data['oppdeling'] == strnr ])
             egensk["validering"] =  { "overlappsautomatikk": "JA" }
             egensk['tempId'] = count
 

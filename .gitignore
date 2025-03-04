@@ -130,3 +130,4 @@ dmypy.json
 
 # Ignorerer lokale datafiler
 data_wip_aug2022/
+*.gdb/

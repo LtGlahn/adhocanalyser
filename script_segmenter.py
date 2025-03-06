@@ -41,7 +41,7 @@ if __name__ == '__main__':
                 'ankerpunktmeter', 'kryssdel', 'sideanleggsdel' ]
     for SLETT in sletteCol: 
         if SLETT in heleNettverketet_medFart.columns: 
-            heleNettverket.drop( columns=SLETT, inplace=True )
+            heleNettverketet_medFart.drop( columns=SLETT, inplace=True )
 
 
     # Lagrer resultatet 

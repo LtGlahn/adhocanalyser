@@ -18,6 +18,16 @@ if __name__ == '__main__':
     myGdf = gpd.GeoDataFrame( mydf, geometry='geometry', crs=5973 )
 
 
+    # Fjerner overflødige kolonner
+    sletteCol = ['versjon', 'Gyldig fra dato', 'segmentlengde', 'segmentretning', 'stedfesting_retning', 'stedfesting_felt',
+                'Vedtaksnummer', 'Arkivnummer', 'typeVeg_sosi', 'målemetode', 'geometri', 'lengde', 'vegsystemreferanse', 
+                  'startdato', 'fase', 'nummer', 'strekning', 'delstrekning', 'fra_meter', 'til_meter',
+                'ankerpunktmeter', 'kryssdel', 'sideanleggsdel' ]
+    for SLETT in sletteCol: 
+        if SLETT in myGdf.columns: 
+            myGdf.drop( columns=SLETT, inplace=True )
+
+
     # Lagrer resultatet 
     # myGdf.to_file( 'trondheimNettverk.gpkg', layer='alleLenker', driver='GPKG')   # QGIS friendly
     myGdf.to_file( 'trondheimNettverk.gdb', layer='alleLenker', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 

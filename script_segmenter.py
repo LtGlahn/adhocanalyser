@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     # Konverterer fra dataframe => Geodataframe  
     mydf['geometry']  = mydf['geometri'].apply( wkt.loads )
-    heleNettverk = gpd.GeoDataFrame( mydf, geometry='geometry', crs=5973 )
+    heleNettverket = gpd.GeoDataFrame( mydf, geometry='geometry', crs=5973 )
 
 
     # Laster ned fartsgrense 
@@ -26,14 +26,24 @@ if __name__ == '__main__':
     fart = gpd.GeoDataFrame( mydf, geometry=mydf['geometri'].apply(wkt.loads ))
 
     # Må dele opp, segmenteringsrutinen forutsetter gyldig metrering 
-    bilveg = heleNettverk[ heleNettverk['trafikantgruppe'] == 'K' ]
-    fotveg = heleNettverk[ heleNettverk['trafikantgruppe'] != 'K' ]
+    bilveg = heleNettverket[ heleNettverket['trafikantgruppe'] == 'K' ]
+    fotveg = heleNettverket[ heleNettverket['trafikantgruppe'] != 'K' ]
 
     medFartsgrense = segmentering.segmenter( bilveg, fart)
 
     # Slår sammen segmentert fartsgrense med "fotveg" - datasettet 
-    heleNettverket_medFart = pd.concat( [ medFartsgrense, fotveg ], ignore_index=True )
+    heleNettverketet_medFart = pd.concat( [ medFartsgrense, fotveg ], ignore_index=True )
+
+    # Fjerner overflødige kolonner
+    sletteCol = ['versjon', 'Gyldig fra dato', 'segmentlengde', 'segmentretning', 'stedfesting_retning', 'stedfesting_felt',
+                'Vedtaksnummer', 'Arkivnummer', 'typeVeg_sosi', 'målemetode', 'geometri', 'lengde', 'vegsystemreferanse', 
+                  'startdato', 'fase', 'nummer', 'strekning', 'delstrekning', 'fra_meter', 'til_meter',
+                'ankerpunktmeter', 'kryssdel', 'sideanleggsdel' ]
+    for SLETT in sletteCol: 
+        if SLETT in heleNettverket.columns: 
+            heleNettverket.drop( columns=SLETT, inplace=True )
+
 
     # Lagrer resultatet 
-    # heleNettverk.to_file( 'trondheimNettverk.gpkg', layer='alleLenker', driver='GPKG')   # QGIS friendly
-    heleNettverket_medFart.to_file( 'segmentert.gdb', layer='allelenker_medfart', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 
+    # heleNettverket.to_file( 'trondheimNettverk.gpkg', layer='alleLenker', driver='GPKG')   # QGIS friendly
+    heleNettverket.to_file( 'segmentert.gdb', layer='allelenker_medfart', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 

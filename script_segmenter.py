@@ -35,15 +35,15 @@ if __name__ == '__main__':
     heleNettverketet_medFart = pd.concat( [ medFartsgrense, fotveg ], ignore_index=True )
 
     # Fjerner overflødige kolonner
-    sletteCol = ['versjon', 'Gyldig fra dato', 'segmentlengde', 'segmentretning', 'stedfesting_retning', 'stedfesting_felt',
+    sletteCol = ['href', 'versjon', 'Gyldig fra dato', 'segmentlengde', 'segmentretning', 'stedfesting_retning', 'stedfesting_felt',
                 'Vedtaksnummer', 'Arkivnummer', 'typeVeg_sosi', 'målemetode', 'geometri', 'lengde', 'vegsystemreferanse', 
                   'startdato', 'fase', 'nummer', 'strekning', 'delstrekning', 'fra_meter', 'til_meter',
                 'ankerpunktmeter', 'kryssdel', 'sideanleggsdel' ]
     for SLETT in sletteCol: 
-        if SLETT in heleNettverket.columns: 
+        if SLETT in heleNettverketet_medFart.columns: 
             heleNettverket.drop( columns=SLETT, inplace=True )
 
 
     # Lagrer resultatet 
     # heleNettverket.to_file( 'trondheimNettverk.gpkg', layer='alleLenker', driver='GPKG')   # QGIS friendly
-    heleNettverket.to_file( 'segmentert.gdb', layer='allelenker_medfart', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 
+    heleNettverketet_medFart.to_file( 'segmentert.gdb', layer='allelenker_medfart', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 

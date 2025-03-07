@@ -31,10 +31,11 @@ if __name__ == '__main__':
                 with open( 'logg.log', 'a') as f:
                     f.write( f"{feil}\n") 
 
-            tekst = f"{len(tempData)} objekter av type {objType['id']} {objType['navn']} med NVDB ID < 10000 av totalt {countObjType}"
-            print( tekst )
-            with open( 'logg.log', 'a') as f:
-                f.write( f"{tekst}\n") 
+            else: 
+                tekst = f"{len(tempData)} objekter av type {objType['id']} {objType['navn']} med NVDB ID < 10000 av totalt {countObjType}"
+                print( tekst )
+                with open( 'logg.log', 'a') as f:
+                    f.write( f"{tekst}\n") 
 
     tekst = f"{len(data)} objekter totalt i NVDB med NVDB ID < 10000 av totalt {countTotal}"
     print( tekst )

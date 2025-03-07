@@ -26,7 +26,10 @@ if __name__ == '__main__':
                         data.append( etobj ) 
                         tempData.append( etobj )
             except ValueError as e: 
-                print( f"Feilmelding ved henting av type {objType['id']} {objType['navn']}: {e} ")
+                feil = ( f"Feilmelding ved henting av type {objType['id']} {objType['navn']}: {e} ")
+                print( feil )
+                with open( 'logg.log', 'a') as f:
+                    f.write( f"{feil}\n") 
 
             tekst = f"{len(tempData)} objekter av type {objType['id']} {objType['navn']} med NVDB ID < 10000 av totalt {countObjType}"
             print( tekst )

@@ -69,7 +69,9 @@ if __name__ == '__main__':
     # Må splitte fart-datasettet i 2 fordi 9 av veglenkene er 2d ??? 
 
 
-    fart.to_file( 'fartsgrense.gdb', layer='fartsgrense', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 
+    fart.to_file( 'fartsgrense.gpkg', layer='fartsgrense', driver='GPG')   # QGIS friendly
+    # saving to GDB doesnt work since there's 9 2D linestrings in the data set. Which is REALLY weird, since all road network data are 3D
+    # fart.to_file( 'fartsgrense.gdb', layer='fartsgrense', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 
 
     # heleNettverket.to_file( 'trondheimNettverk.gpkg', layer='alleLenker', driver='GPKG')   # QGIS friendly
     heleNettverket_medFart.to_file( 'segmentert.gdb', layer='allelenker_medfart', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 

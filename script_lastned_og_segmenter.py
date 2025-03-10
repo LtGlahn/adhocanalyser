@@ -22,6 +22,8 @@ if __name__ == '__main__':
     mydf['geometry']  = mydf['geometri'].apply( wkt.loads )
     heleNettverket = gpd.GeoDataFrame( mydf, geometry='geometry', crs=5973 )
 
+    # Legger på gatenavn bare fordi vi kan (og det er potensielt nyttig)
+    heleNettverket['Gatenavn'] =  heleNettverket['gate'].apply( lambda x : x['navn'] if isinstance( x, dict) else '' )
 
     # Laster ned fartsgrense 
     mydf = pd.DataFrame( nvdbapiv3.nvdbFagdata(105, filter={'kommune' : 5001}).to_records() )
@@ -54,10 +56,20 @@ if __name__ == '__main__':
         if SLETT in heleNettverket.columns: 
             heleNettverket.drop( columns=SLETT, inplace=True )
 
+    for SLETT in sletteCol: 
+        if SLETT in fart.columns: 
+            fart.drop( columns=SLETT, inplace=True )
+
 
     # Lagrer resultatet 
     # myGdf.to_file( 'trondheimNettverk.gpkg', layer='alleLenker', driver='GPKG')   # QGIS friendly
     heleNettverket.to_file( 'trondheimNettverk.gdb', layer='alleLenker', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 
+
+
+    # Må splitte fart-datasettet i 2 fordi 9 av veglenkene er 2d ??? 
+
+
+    fart.to_file( 'fartsgrense.gdb', layer='fartsgrense', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 
 
     # heleNettverket.to_file( 'trondheimNettverk.gpkg', layer='alleLenker', driver='GPKG')   # QGIS friendly
     heleNettverket_medFart.to_file( 'segmentert.gdb', layer='allelenker_medfart', driver='OpenFileGDB', TARGET_ARCGIS_VERSION='ARCGIS_PRO_3_2_OR_LATER')   # Esri friendly 

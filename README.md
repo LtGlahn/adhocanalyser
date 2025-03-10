@@ -1,8 +1,10 @@
 # Demo - datanedlasting for sykkelrute-planlegging Trondheim
 
-Eksempler på pythonkode for å laste ned ALT av vegnettsdata (for trafikantgruppe G og K, pluss også veglenker uten metrering eller  trafikantgruppe, f.eks. gangfelt)
+Eksempler på pythonkode for å laste ned ALT av vegnettsdata. Som kjent har NVDB fått mye data for nettverk for gående og syklende.
+I tillegg til  trafikantgruppe G og K har vi også veglenker uten metrering eller  trafikantgruppe, f.eks. gangfelt, trapp, Sti m.m.
 
-TODO: Eksempler på segmentering av vegnett + fartsgrense + bru 
+Nedlastet vegnett blir også segmentert på fartsgrense.
+
 
 
 # Installasjon

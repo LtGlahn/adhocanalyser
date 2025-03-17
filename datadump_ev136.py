@@ -39,7 +39,7 @@ if __name__ == '__main__':
     ignorerListe = [
         343,  # Stedsnavn - totalt uinteressant for budsjettformål 
         562,  # Testobjekttype Ikke indeksert og dessuten totalt uinteressant 
-        578,  # Svingerestriksjon totalt uinteressant for budsjettformål (og dessuten snål datahåndtering)
+        573,  # Svingerestriksjon totalt uinteressant for budsjettformål (og dessuten snål datahåndtering)
         793,  # NVDB dokumentasjon - Ikke indeksert og dessuten total uinteressant 
         871, # Historisk_Bruksklasse Skjermet og dessuten uinteressant 
         886, # Omkjøringsrute - Burde gått greit, men gir feilmelding fra LES pga datavolum (digert enkeltobjekt). Dog uinterssant
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     # dakat = dakat[0:7] # Liten testsample
     for objType in dakat:
-        if objType['id'] not in ignorerListe:
+        if objType['id'] not in ignorerListe and objType['id'] > 571:
             myDf = pd.DataFrame( nvdbapiv3.nvdbFagdata( objType['id'], filter=mittFilter).to_records() )
             myDf = slettCol( myDf )
             if len( myDf ) > 0: 

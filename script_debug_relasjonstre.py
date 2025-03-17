@@ -78,7 +78,7 @@ def behandleObjekt( obj:dict ):
 
     return etobj 
 
-def rekursivt_sjekkFamilie( nvdbId:int, staMMor=None  )->dict: 
+def rekursivt_sjekkFamilie( nvdbId:int, staMMor=None, slektstre=None  )->dict: 
     """
     Sjekker rekursivt alle barn og barnebarn og kvalitetsikrer alle relasjonene 
     """
@@ -92,16 +92,25 @@ def rekursivt_sjekkFamilie( nvdbId:int, staMMor=None  )->dict:
         staMMor['stammorId'] = nvdbId
         staMMor['Stammor Type'] = f"{obj['metadata']['type']['id']} {obj['metadata']['type']['navn']}"
 
-    # Sjekker dette objektets relasjoner 
+    if isinstance( slektstre, str):
+        slektstre += f" -> {obj['metadata']['type']['id']}:{nvdbId}"
+
+    else: 
+        slektstre = f"{obj['metadata']['type']['id']}:{nvdbId}"
+
+    # Sjekker dette objektets relasjoner og legger på informasjon om overliggende hierarki
     objRetur = behandleObjekt( obj ) 
     objRetur.update( staMMor )
+    objRetur['slektstre'] = slektstre 
     returdata.append( objRetur )
+
+
 
     # Jobber oss rekursivt gjennom alle relasjoner 
     assosiasjoner = plukkUtAssosiasjoner(obj['egenskaper'])
     for assType in assosiasjoner.keys(): 
         for eiDatter in assosiasjoner[assType]: 
-            returdata.extend( rekursivt_sjekkFamilie( eiDatter, staMMor=staMMor ))
+            returdata.extend( rekursivt_sjekkFamilie( eiDatter, staMMor=staMMor, slektstre=slektstre ))
 
     return returdata 
 if __name__ == '__main__': 
@@ -114,3 +123,7 @@ if __name__ == '__main__':
 
         data.append( behandleObjekt( obj ) )
         rekursivedata.extend( rekursivt_sjekkFamilie( obj['id'] ))
+
+
+    mydf = pd.DataFrame( rekursivedata )
+    mydf.to_excel( 'relasjonseksempelQA.xlsx', index=False )

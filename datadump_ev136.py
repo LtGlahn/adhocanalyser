@@ -37,10 +37,11 @@ if __name__ == '__main__':
 
     # Liste over vegobjekt vi ignorerer 
     ignorerListe = [
-        562,  # Testobjekttype Ikke indeksert og dessuten uinteressant 
-        793,  # NVDB dokumentasjon - Ikke indeksert og dessuten uinteressant 
+        343,  # Stedsnavn - totalt uinteressant for budsjettformål 
+        562,  # Testobjekttype Ikke indeksert og dessuten totalt uinteressant 
+        793,  # NVDB dokumentasjon - Ikke indeksert og dessuten total uinteressant 
         871, # Historisk_Bruksklasse Skjermet og dessuten uinteressant 
-        886, # Omkjøringsrute - Burde gått greit, men gir feilmelding fra LES pga datavolum (digert enkeltobjekt)
+        886, # Omkjøringsrute - Burde gått greit, men gir feilmelding fra LES pga datavolum (digert enkeltobjekt). Dog uinterssant
         890, # Bruksklasse, modulvogntog, uoffisiell - Skjermet 
         892,  # Bruksklasse, 12/65 mobilkran m.m., uoffisiell - Skjermet 
         894, # Bruksklasse, 12/100-vegnett, uoffisiell - Skjermet 

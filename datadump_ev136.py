@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     # dakat = dakat[0:7] # Liten testsample
     for objType in dakat:
-        if objType['id'] not in ignorerListe and objType['id'] > 571:
+        if objType['id'] not in ignorerListe:
             myDf = pd.DataFrame( nvdbapiv3.nvdbFagdata( objType['id'], filter=mittFilter).to_records() )
             myDf = slettCol( myDf )
             if len( myDf ) > 0: 
